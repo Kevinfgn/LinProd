@@ -1,4 +1,7 @@
 def generate_report(products):
+    
+    #Genera métricas clave de los productos procesados.
+    
     if not products:
         return {}
 

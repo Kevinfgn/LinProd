@@ -5,25 +5,25 @@ from reports import generate_report
 
 
 def build_production_line():
-    """
-    Crea y conecta los procesos y tareas de la línea de producción.
-    La estructura final es:
-        Inicio:       T1.1 (2 ciclos)
-        Intermedio:   T2.1 (3 ciclos) -> T2.2 (2 ciclos)
-        Final:        T3.1 (1 ciclo)
-    """
+    
+    #Crea y conecta los procesos y tareas de la línea de producción.
+    #La estructura final es:
+    #    Inicio:       T1.1 (2 ciclos)
+    #    Intermedio:   T2.1 (3 ciclos) -> T2.2 (2 ciclos)
+    #    Final:        T3.1 (1 ciclo)
+    
     # Crear procesos
     inicio = Process("Inicio", is_start=True)
     intermedio = Process("Intermedio")
     final = Process("Final", is_end=True)
 
-    # Agregar tareas a cada proceso (simulan máquinas)
+    # Agregar tareas a cada proceso
     inicio.add_task(Task("T1.1", duration=2))
     intermedio.add_task(Task("T2.1", duration=3))
     intermedio.add_task(Task("T2.2", duration=2))
     final.add_task(Task("T3.1", duration=1))
 
-    # Enlazar los procesos para formar la línea de producción
+    # Enlazar procesos en orden secuencial
     inicio.set_next_process(intermedio)
     intermedio.set_next_process(final)
 
@@ -33,13 +33,14 @@ def build_production_line():
 def main():
     print("🛠️ Configurando la línea de producción...\n")
 
-    # Crear productos para procesar
+    # Crear productos para simular
     num_productos = 5
     productos = [Product(i) for i in range(num_productos)]
 
-    # Construir la línea de producción
+    # Construir estructura de procesos y tareas
     procesos = build_production_line()
 
+    # Mostrar la configuración antes de iniciar
     print("📋 Procesos y Tareas Configurados:")
     for proceso in procesos:
         print(f" - {proceso.name}:")
@@ -47,7 +48,7 @@ def main():
             print(f"    • Tarea {tarea.name} (duración: {tarea.duration} ciclos)")
     print("\n🔄 Iniciando simulación con", num_productos, "productos...\n")
 
-    # Ejecutar la simulación por ciclos de tiempo
+    # Ejecutar la simulación
     simulador = Simulator(productos, procesos, max_cycles=50)
     simulador.run()
 

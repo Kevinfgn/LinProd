@@ -1,6 +1,11 @@
 import time
 
 class Simulator:
+    
+    #Controlador de la simulación: administra los ciclos de tiempo,
+    #mueve productos y recoge estadísticas.
+    
+
     def __init__(self, products, processes, max_cycles=1000):
         self.products = products
         self.processes = processes
@@ -9,6 +14,12 @@ class Simulator:
         self.time = 0
 
     def run(self):
+        
+        #Inicia y ejecuta la simulación por ciclos:
+        #- En cada ciclo: cada proceso trabaja sus tareas.
+        #- Se imprime el estado de cada tarea.
+        #- Cuando todos los productos terminan o se alcanza el máximo de ciclos, se detiene.
+        
         for p in self.products:
             p.entry_time = time.time()
             self.processes[0].enqueue_product(p)
@@ -41,10 +52,3 @@ class Simulator:
 
             self.time += 1
             time.sleep(1)
-
-
-
-    def pause_and_report(self):
-        print("\n--- Estado de la línea de producción ---")
-        for process in self.processes:
-            print(process.status())
