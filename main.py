@@ -51,14 +51,14 @@ def main():
     print("\n🔄 Iniciando simulación con", num_productos, "productos...\n")
 
     # Ejecutar la simulación
-    simulador = Simulator(productos, procesos, max_cycles=50)
+    simulador = Simulator(productos, procesos, max_cycles=20)
     simulador.run()
 
     # Generar y mostrar la reportería final
     print("\n📊 Reporte Final de Simulación:")
-    estadisticas = generate_report(simulador.completed_products)
+    estadisticas = generate_report(simulador.products)
     for clave, valor in estadisticas.items():
-        print(f" - {clave.replace('_', ' ').capitalize()}: {valor:.2f} segundos")
+        print(f" - {clave.replace('_', ' ').capitalize()}: {valor}")
 
     print("\n✅ Simulación completada.")
 
