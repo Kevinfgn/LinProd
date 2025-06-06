@@ -184,7 +184,9 @@ class AppGUI:
         self.log_text.pack(fill="both", expand=True)
 
         self.current_cycle = 0
-
+    
+        #para verificación del reporte
+        self.reporte_generado = False
 
     def add_process(self):
         existing_start = any(p.is_start for p in self.process_uis)
@@ -321,20 +323,8 @@ class AppGUI:
                 else:
                     self.log(f" - {k.replace('_', ' ').capitalize()}: {v}")
             ReportWindow(self.root, reporte)
-
-
-
-        # Mostrar reporte
-        print("\n Reporte Final:")
-        reporte = generate_report(sim.completed_products)
-        for k, v in reporte.items():
-            if isinstance(v, (int, float)):
-                print(f" - {k.replace('_', ' ').capitalize()}: {v:.2f} segundos")
-            else:
-                print(f" - {k.replace('_', ' ').capitalize()}: {v}")
-
-
-        ventana_reporte = ReportWindow(self.root, reporte)
+        
+        self.reporte_generado = True
 
 
     #Para escribir en el panel
@@ -394,13 +384,15 @@ class AppGUI:
             time.sleep(1)
 
         # Finalización
-        if len(sim.completed_products) == len(productos):
-            from reports import generate_report
-            self.log("\n✅ Todos los productos procesados.")
-            self.log("\n Reporte Final:")
-            reporte = generate_report(sim.completed_products)
-            for k, v in reporte.items():
-                self.log(f" - {k.replace('_', ' ').capitalize()}: {v:.2f} segundos")
+            if len(sim.completed_products) == len(productos) and not self.reporte_generado:
+                self.log("\n✅ Todos los productos procesados.")
+                self.log("\n Reporte Final:")
+                reporte = generate_report(sim.completed_products)
+                for k, v in reporte.items():
+                    self.log(f" - {k.replace('_', ' ').capitalize()}: {v:.2f} segundos")
+                ReportWindow(self.root, reporte)
+                self.reporte_generado = True
+
 
             ventana_reporte = ReportWindow(self.root, reporte)
             self.simulador = None
