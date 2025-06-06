@@ -8,20 +8,22 @@ def build_production_line():
     
     #Crea y conecta los procesos y tareas de la línea de producción.
     #La estructura final es:
-    #    Inicio:       T1.1 (2 ciclos)
-    #    Intermedio:   T2.1 (3 ciclos) -> T2.2 (2 ciclos)
-    #    Final:        T3.1 (1 ciclo)
+    #    Inicio:       T1.1 (2 ciclos) /Ensamblaje: Soldar Piezas(2 ciclos) -> Ajustar tornillos (1 ciclo)
+    #    Intermedio:   T2.1 (3 ciclos) -> T2.2 (2 ciclos) /Pintura: Aplicar base(3 ciclos) -> Aplicar pintura(2 ciclos)
+    #    Final:        T3.1 (1 ciclo) /Empaque: Insertar manual(1 ciclo) -> Cerrar caja(1 ciclo)
     
     # Crear procesos
-    inicio = Process("Inicio", is_start=True)
-    intermedio = Process("Intermedio")
-    final = Process("Final", is_end=True)
+    inicio = Process("Ensamblaje", is_start=True)
+    intermedio = Process("Pintura")
+    final = Process("Empaque", is_end=True)
 
     # Agregar tareas a cada proceso
-    inicio.add_task(Task("T1.1", duration=2))
-    intermedio.add_task(Task("T2.1", duration=3))
-    intermedio.add_task(Task("T2.2", duration=2))
-    final.add_task(Task("T3.1", duration=1))
+    inicio.add_task(Task("Soldar Piezas", duration=2))
+    inicio.add_task(Task("Ajustar tornillos", duration=1))
+    intermedio.add_task(Task("Aplicar base", duration=3))
+    intermedio.add_task(Task("Aplicar pintura", duration=2))
+    final.add_task(Task("Insertar manual", duration=1))
+    final.add_task(Task("Cerrar caja", duration=1))
 
     # Enlazar procesos en orden secuencial
     inicio.set_next_process(intermedio)
