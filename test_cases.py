@@ -2,7 +2,7 @@ from product import Product
 from production_line import Task, Process
 
 def test_task_queue_behavior():
-    task = Task("Prueba", 2)
+    task = Task("Aplicar pintura", 2)
     p1 = Product(1)
     p2 = Product(2)
     task.enqueue_product(p1)
@@ -17,9 +17,9 @@ def test_task_queue_behavior():
     assert task.current_product is None
 
 def test_process_flow():
-    p = Process("Test", is_start=True, is_end=True)
-    t1 = Task("T1", 1)
-    t2 = Task("T2", 1)
+    p = Process("Pintura", is_start=True, is_end=True)
+    t1 = Task("Aplicar base", 3)
+    t2 = Task("Aplicar pintura", 2)
     p.add_task(t1)
     p.add_task(t2)
 
