@@ -30,13 +30,23 @@ class Task:
             self.remaining_time -= 1
             if self.remaining_time <= 0:
                 completed = self.current_product
+                completed.history[-1]["end_time"] = time.time()
                 self.current_product = None
                 self.busy = False
                 return completed
         elif self.queue:
             self.current_product = self.queue.popleft()
+            wait_time = time.time() - self.current_product.entry_time if not self.current_product.history else time.time() - self.current_product.history[-1]["end_time"]
+
             self.busy = True
             self.remaining_time = self.duration
+            self.current_product.history.append({
+                "task": self.name,
+                "process": getattr(self, "process_name", "Desconocido"),
+                "start_time": time.time(),
+                "end_time": None,
+                "wait_time": wait_time
+            })
         return None
 
     def status(self):
@@ -65,6 +75,7 @@ class Process:
         self.is_end = is_end
 
     def add_task(self, task: Task):
+        task.process_name = self.name  # Inject process name
         self.tasks.append(task)
 
     def set_next_process(self, process):
