@@ -311,6 +311,18 @@ class AppGUI:
             ciclo += 1
             time.sleep(1)
 
+        if len(sim.completed_products) == len(productos):
+            self.log("\n✅ Todos los productos procesados.")
+            self.log("\n Reporte Final:")
+            reporte = generate_report(sim.completed_products)
+            for k, v in reporte.items():
+                if isinstance(v, (int, float)):
+                    self.log(f" - {k.replace('_', ' ').capitalize()}: {v:.2f} segundos")
+                else:
+                    self.log(f" - {k.replace('_', ' ').capitalize()}: {v}")
+            ReportWindow(self.root, reporte)
+
+
 
         # Mostrar reporte
         print("\n Reporte Final:")
