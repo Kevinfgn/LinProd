@@ -186,7 +186,8 @@ class AppGUI:
         self.current_cycle = 0
     
         #para verificación del reporte
-        self.reporte_generado = False
+        self.reporte_parcial_generado = False
+        self.reporte_final_generado = False
 
     def add_process(self):
         existing_start = any(p.is_start for p in self.process_uis)
@@ -313,18 +314,20 @@ class AppGUI:
             ciclo += 1
             time.sleep(1)
 
+        # Mostrar reporte final si todos los productos fueron procesados
         if len(sim.completed_products) == len(productos):
-            self.log("\n✅ Todos los productos procesados.")
-            self.log("\n Reporte Final:")
-            reporte = generate_report(sim.completed_products)
-            for k, v in reporte.items():
-                if isinstance(v, (int, float)):
-                    self.log(f" - {k.replace('_', ' ').capitalize()}: {v:.2f} segundos")
-                else:
-                    self.log(f" - {k.replace('_', ' ').capitalize()}: {v}")
-            ReportWindow(self.root, reporte)
-        
-        self.reporte_generado = True
+            if not self.reporte_final_generado:
+                self.log("\n✅ Todos los productos procesados.")
+                self.log("\n Reporte Final:")
+                reporte = generate_report(sim.completed_products)
+                for k, v in reporte.items():
+                    if isinstance(v, (int, float)):
+                        self.log(f" - {k.replace('_', ' ').capitalize()}: {v:.2f} segundos")
+                    else:
+                        self.log(f" - {k.replace('_', ' ').capitalize()}: {v}")
+                ReportWindow(self.root, reporte)
+                self.reporte_final_generado = True
+
 
 
     #Para escribir en el panel
@@ -337,6 +340,19 @@ class AppGUI:
     #pausar simulación
     def request_pause(self):
         self.pause_requested = True
+
+        # Mostrar un reporte parcial
+        if self.simulador and self.simulador.completed_products and not self.reporte_parcial_generado:
+            self.log("\n⏸️ Simulación pausada. Reporte parcial:")
+            reporte = generate_report(self.simulador.completed_products)
+            for k, v in reporte.items():
+                if isinstance(v, (int, float)):
+                    self.log(f" - {k.replace('_', ' ').capitalize()}: {v:.2f} segundos")
+                else:
+                    self.log(f" - {k.replace('_', ' ').capitalize()}: {v}")
+            ReportWindow(self.root, reporte)
+            self.reporte_parcial_generado = True
+
     
     #reanudar simulación
     def continue_simulation(self):
@@ -347,6 +363,21 @@ class AppGUI:
         self.btn_continue["state"] = "disabled"
         self.log("\n Reanudando simulación...\n")
 
+        # Si ya terminó, mostrar el reporte directamente
+        if len(sim.completed_products) == len(productos) and not self.reporte_final_generado:
+            self.log("\n✅ Todos los productos procesados.")
+            self.log("\n Reporte Final:")
+            reporte = generate_report(sim.completed_products)
+            for k, v in reporte.items():
+                if isinstance(v, (int, float)):
+                    self.log(f" - {k.replace('_', ' ').capitalize()}: {v:.2f} segundos")
+                else:
+                    self.log(f" - {k.replace('_', ' ').capitalize()}: {v}")
+            ReportWindow(self.root, reporte)
+            self.reporte_final_generado = True
+            return  # Salir de la función
+
+        # Continuar normalmente si no ha terminado
         while ciclo < 100 and len(sim.completed_products) < len(productos):
             if self.pause_requested:
                 self.log("\n⏸️ Simulación pausada por el usuario.")
@@ -383,21 +414,22 @@ class AppGUI:
             ciclo += 1
             time.sleep(1)
 
-        # Finalización
-            if len(sim.completed_products) == len(productos) and not self.reporte_generado:
-                self.log("\n✅ Todos los productos procesados.")
-                self.log("\n Reporte Final:")
-                reporte = generate_report(sim.completed_products)
-                for k, v in reporte.items():
+        if len(sim.completed_products) == len(productos) and not self.reporte_final_generado:
+            self.log("\n✅ Todos los productos procesados.")
+            self.log("\n Reporte Final:")
+            reporte = generate_report(sim.completed_products)
+            for k, v in reporte.items():
+                if isinstance(v, (int, float)):
                     self.log(f" - {k.replace('_', ' ').capitalize()}: {v:.2f} segundos")
-                ReportWindow(self.root, reporte)
-                self.reporte_generado = True
+                else:
+                    self.log(f" - {k.replace('_', ' ').capitalize()}: {v}")
+            ReportWindow(self.root, reporte)
+            self.reporte_final_generado = True
 
+        self.simulador = None
+        self.productos = []
+        self.current_cycle = 0
 
-            ventana_reporte = ReportWindow(self.root, reporte)
-            self.simulador = None
-            self.productos = []
-            self.current_cycle = 0
 
     def add_task_globally(self):
         if not self.process_uis:
